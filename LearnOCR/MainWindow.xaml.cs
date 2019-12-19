@@ -1,8 +1,7 @@
 ﻿using System.Windows;
-using MvvmLight1.Model;
-using MvvmLight1.ViewModel;
+using LearnOCR.ViewModel;
 
-namespace MvvmLight1
+namespace LearnOCR
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
