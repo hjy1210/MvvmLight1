@@ -16,7 +16,7 @@ namespace LearnOCR.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private const string TessData = @"d:/tessdata";
+        private const string TessData = @"d:\tessdata";
 
         private readonly IDataService _dataService;
 
@@ -115,12 +115,12 @@ namespace LearnOCR.ViewModel
             if (dialog.ShowDialog() == true)
             {
                 using (var fs = new FileStream(dialog.FileName, FileMode.Open))
-                using (var tesseract = OCRTesseract.Create(TessData))
+                using (var tesseract = OCRTesseract.Create(TessData, "eng", "0123456789-"))
                 {
                     Mat mat = Mat.FromStream(fs, ImreadModes.Grayscale);
                     Cv2.GaussianBlur(mat,mat, new Size(5, 5), 0);
                     tesseract.Run(mat,
-                        out var outputText, out var componentRects, out var componentTexts, out var componentConfidences);
+                        out var outputText, out var componentRects, out var componentTexts, out var componentConfidences,ComponentLevels.TextLine);
                     string data = "(";
                     data+=outputText+")\n";
                     for (int i=0;i< componentRects.Length; i++)
