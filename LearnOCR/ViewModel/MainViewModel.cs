@@ -3,8 +3,10 @@ using GalaSoft.MvvmLight.Command;
 using LearnOCR.Model;
 using Microsoft.Win32;
 using OpenCvSharp;
+using OpenCvSharp.Extensions;
 using OpenCvSharp.Text;
 using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace LearnOCR.ViewModel
 {
@@ -16,7 +18,7 @@ namespace LearnOCR.ViewModel
     /// </summary>
     public class MainViewModel : ViewModelBase
     {
-        private const string TessData = @"d:\tessdata";
+        public const string TessData = @"d:\tessdata";
 
         private readonly IDataService _dataService;
 
@@ -42,7 +44,122 @@ namespace LearnOCR.ViewModel
                 Set(ref _welcomeTitle, value);
             }
         }
+        /// <summary>
+        /// The <see cref="BitmapSrc" /> property's name.
+        /// </summary>
+        public const string BitmapSrcPropertyName = "BitmapSrc";
+        private BitmapSource _bitmapSrc = null;
+        /// <summary>
+        /// Sets and gets the BitmapSrc property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public BitmapSource BitmapSrc
+        {
+            get
+            {
+                return _bitmapSrc;
+            }
+            set
+            {
+                Set(BitmapSrcPropertyName, ref _bitmapSrc, value);
+                Mat img = BitmapSourceConverter.ToMat(BitmapSrc);
+                Cv2.CvtColor(img, SourceMat, ColorConversionCodes.BGR2GRAY);
+                PixelWidth = img.Cols;
+                PixelHeight = img.Rows;
+            }
+        }
 
+        /// <summary>
+        /// The <see cref="BitmapRoi" /> property's name.
+        /// </summary>
+        public const string BitmapRoiPropertyName = "BitmapRoi";
+
+        private BitmapSource _bitmapRoi = null;
+
+        /// <summary>
+        /// Sets and gets the BitmapRoi property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public BitmapSource BitmapRoi
+        {
+            get
+            {
+                return _bitmapRoi;
+            }
+            set
+            {
+                Set(BitmapRoiPropertyName, ref _bitmapRoi, value);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="PixelWidth" /> property's name.
+        /// </summary>
+        public const string PixelWidthPropertyName = "PixelWidth";
+
+        private int _pixelWidth = 2000;
+
+        /// <summary>
+        /// Sets and gets the PixelWidth property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int PixelWidth
+        {
+            get
+            {
+                return _pixelWidth;
+            }
+            set
+            {
+                Set(PixelWidthPropertyName, ref _pixelWidth, value);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="PixelHeight" /> property's name.
+        /// </summary>
+        public const string PixelHeightPropertyName = "PixelHeight";
+
+        private int _pixelHeight = 2000;
+
+        /// <summary>
+        /// Sets and gets the PixelHeight property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int PixelHeight
+        {
+            get
+            {
+                return _pixelHeight;
+            }
+            set
+            {
+                Set(PixelHeightPropertyName, ref _pixelHeight, value);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="SourceMat" /> property's name.
+        /// </summary>
+        public const string SourceMatPropertyName = "SourceMat";
+
+        private Mat _sourceMat = new Mat();
+
+        /// <summary>
+        /// Sets and gets the SourceMat property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public Mat SourceMat
+        {
+            get
+            {
+                return _sourceMat;
+            }
+            set
+            {
+                Set(SourceMatPropertyName, ref _sourceMat, value);
+            }
+        }
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
@@ -131,6 +248,10 @@ namespace LearnOCR.ViewModel
                 }
 
             }
+        }
+        private void Test()
+        {
+            //BitmapSourceConverter.ToMat()
         }
 
     }
