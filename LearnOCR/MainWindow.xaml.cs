@@ -47,6 +47,7 @@ namespace LearnOCR
                 viewModel.BitmapSrc = new BitmapImage(new Uri(dialog.FileName));
                 viewModel.PixelHeight = viewModel.BitmapSrc.PixelHeight;
                 viewModel.PixelWidth = viewModel.BitmapSrc.PixelWidth;
+                image1.RenderTransform= new ScaleTransform(viewModel.BitmapSrc.DpiX / 96, viewModel.BitmapSrc.DpiY / 96);
             }
         }
 
@@ -72,31 +73,35 @@ namespace LearnOCR
             //tbxData.Text = $"{p.X}, {p.Y}";
             dragging = false;
             canvas.ReleaseMouseCapture();
-            if (canvas.Children.Count >= 2 && (canvas.Children[1] as Rectangle)!=null)
+        }
+
+        private void DoOcr()
+        {
+            if (canvas.Children.Count >= 2 && (canvas.Children[1] as Rectangle) != null)
             {
                 Rectangle rect = canvas.Children[1] as Rectangle;
                 GetRoi(rect, out int left, out int top, out int right, out int bottom);
                 OpenCvSharp.Mat m = new OpenCvSharp.Mat();
-                viewModel.SourceMat.SubMat(top, bottom, left, right).CopyTo(m);
-                OpenCvSharp.Cv2.HConcat(new OpenCvSharp.Mat[] { m, m, m, m }, m);
-                viewModel.BitmapRoi = BitmapSourceConverter.ToBitmapSource(m);
-                using (var tesseract = OCRTesseract.Create(MainViewModel.TessData, "eng", "0123456789-"))
+                if (top < bottom && left < right && left >= 0 && right < viewModel.SourceMat.Cols && top >= 0 && bottom < viewModel.SourceMat.Rows)
                 {
-                    OpenCvSharp.Cv2.GaussianBlur(m, m, new OpenCvSharp.Size(5, 5), 0);
-                    tesseract.Run(m,
-                        out var outputText, out var componentRects, out var componentTexts, out var componentConfidences, ComponentLevels.TextLine);
-                    string data = "(";
-                    data += outputText + ")\n";
-                    for (int i = 0; i < componentRects.Length; i++)
+                    viewModel.SourceMat.SubMat(top, bottom, left, right).CopyTo(m);
+                    OpenCvSharp.Cv2.HConcat(new OpenCvSharp.Mat[] { m, m, m, m }, m);
+                    viewModel.BitmapRoi = BitmapSourceConverter.ToBitmapSource(m);
+                    using (var tesseract = OCRTesseract.Create(MainViewModel.TessData, "eng", "0123456789-"))
                     {
-                        data += $"({componentTexts[i]}) apperred at {componentRects[i]} with confidence {componentConfidences[i]}\n";
+                        OpenCvSharp.Cv2.GaussianBlur(m, m, new OpenCvSharp.Size(5, 5), 0);
+                        tesseract.Run(m,
+                            out var outputText, out var componentRects, out var componentTexts, out var componentConfidences, ComponentLevels.TextLine);
+                        string data = "(";
+                        data += outputText + ")\n";
+                        for (int i = 0; i < componentRects.Length; i++)
+                        {
+                            data += $"({componentTexts[i]}) apperred at {componentRects[i]} with confidence {componentConfidences[i]}\n";
+                        }
+                        tbxData.Text = outputText;
                     }
-                    tbxData.Text = outputText;
                 }
-
-                //MessageBox.Show(rect.GetValue(Canvas.LeftProperty).ToString());
             }
-
         }
 
         private void canvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
@@ -117,6 +122,12 @@ namespace LearnOCR
                 Canvas.SetLeft(rect, left);
                 canvas.Children.Add(rect);
             }
+        }
+
+        private void btnAction_Click(object sender, RoutedEventArgs e)
+        {
+            if (cbbActions.SelectedIndex == 2 && (canvas.Children[1] as Rectangle) != null)
+                DoOcr();
         }
     }
 }

@@ -49,6 +49,8 @@
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal">
                             <Button Name="btnLoadImage" Content="Load Image" Click="btnLoadImage_Click"/>
+                            <ComboBox ItemsSource="{Binding Actions}" Width="60" Name="cbbActions"/>
+                            <Button Name="btnAction" Content="Action" Click="btnAction_Click"/>
                             <TextBox Width="200" Name="tbxData"/>
                             <TextBlock Text="拖拉一塊含題號數字的小區域，上下留有適當空白，左右只留一點點，會進行OCR辨識"/>
                         </StackPanel>

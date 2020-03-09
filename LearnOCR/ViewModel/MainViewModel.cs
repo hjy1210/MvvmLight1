@@ -5,6 +5,7 @@ using Microsoft.Win32;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using OpenCvSharp.Text;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Media.Imaging;
 
@@ -21,6 +22,7 @@ namespace LearnOCR.ViewModel
         public const string TessData = @"d:\tessdata";
 
         private readonly IDataService _dataService;
+        public ObservableCollection<string> Actions { get; set; }
 
         /// <summary>
         /// The <see cref="WelcomeTitle" /> property's name.
@@ -177,6 +179,7 @@ namespace LearnOCR.ViewModel
 
                     WelcomeTitle = item.Title;
                 });
+            Actions = new ObservableCollection<string> { "Set Digits", "Outer Contour", "Ocr" };
         }
         private RelayCommand _RecognizeCommand;
 
