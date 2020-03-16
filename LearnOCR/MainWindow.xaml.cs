@@ -87,7 +87,7 @@ namespace LearnOCR
                     viewModel.SourceMat.SubMat(top, bottom, left, right).CopyTo(m);
                     OpenCvSharp.Cv2.HConcat(new OpenCvSharp.Mat[] { m, m, m, m }, m);
                     viewModel.BitmapRoi = BitmapSourceConverter.ToBitmapSource(m);
-                    using (var tesseract = OCRTesseract.Create(MainViewModel.TessData, "eng", "0123456789-"))
+                    using (var tesseract = OCRTesseract.Create(MainViewModel.TessData, "eng", "0123456789-",3,7)) // 7: Page Segmentation Mode 7:single text line
                     {
                         OpenCvSharp.Cv2.GaussianBlur(m, m, new OpenCvSharp.Size(5, 5), 0);
                         tesseract.Run(m,
